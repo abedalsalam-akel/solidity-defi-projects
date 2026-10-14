@@ -1,0 +1,27 @@
+name: Solidity contract build and tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install Ape and contract test dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Use repo's local-test Ape configuration
+        run: cp ape/ape-config.yaml ape-config.yaml
+      - name: Compile Solidity contracts
+        run: ape compile --force
+      - name: Run Ethereum contract tests
+        run: ape test -v
